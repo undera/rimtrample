@@ -12,6 +12,8 @@ namespace rimtrample
 	public static class HarmonyPatches
 	{
 		private static readonly FieldInfo pawnField = AccessTools.Field (typeof(PawnFootprintMaker), "pawn");
+		private static readonly FieldInfo growthIntField = AccessTools.Field (typeof(Plant), "growthInt");
+		private static readonly PropertyInfo growthPerTickField = AccessTools.Property (typeof(Plant), "GrowthPerTick");
 		private static Dictionary<Pawn, IntVec3> pawnPrevPos = new Dictionary<Pawn, IntVec3> ();
 
 		// this static constructor runs to create a HarmonyInstance and install a patch.
@@ -21,12 +23,16 @@ namespace rimtrample
 			HarmonyInstance harmony = HarmonyInstance.Create ("rimworld.undera4.unificamagica");
 
 			MethodInfo targetmethod = AccessTools.Method (typeof(RimWorld.PawnFootprintMaker), "FootprintMakerTick");
-			HarmonyMethod hook = new HarmonyMethod (typeof(rimtrample.HarmonyPatches).GetMethod ("Hook"));
-			harmony.Patch (targetmethod, null, hook);
+			HarmonyMethod hookA = new HarmonyMethod (typeof(rimtrample.HarmonyPatches).GetMethod ("Hook"));
+			harmony.Patch (targetmethod, null, hookA);
 
 			MethodInfo destructor = AccessTools.Method (typeof(Pawn), "Destroy");
-			HarmonyMethod hookD = new HarmonyMethod (typeof(rimtrample.HarmonyPatches).GetMethod ("DeleteFromMap"));
-			harmony.Patch (destructor, hookD, null);
+			HarmonyMethod hookB = new HarmonyMethod (typeof(rimtrample.HarmonyPatches).GetMethod ("DeleteFromMap"));
+			harmony.Patch (destructor, hookB, null);
+
+			MethodInfo plantTick = AccessTools.Method (typeof(Plant), "TickLong");
+			HarmonyMethod hookC = new HarmonyMethod (typeof(rimtrample.HarmonyPatches).GetMethod ("PlantTickLong"));
+			harmony.Patch (plantTick, hookC, null);
 
 			Log.Message ("trample patch end");
 		}
@@ -37,12 +43,12 @@ namespace rimtrample
 			if (PawnMoved (__instance, pawn)) { // constant is just copied from PawnFootprintMaker
 
 				Plant plant = pawn.Position.GetPlant (pawn.Map);
-				if (plant != null) {
-					int damage = (int)Math.Floor (pawn.GetStatValue (StatDefOf.Mass, true) / 20);
+				if (plant != null && pawn.CurJob.def != JobDefOf.Sow && pawn.CurJob.def != JobDefOf.Harvest && pawn.CurJob.def != JobDefOf.CutPlant) {
+					int damage = (int)Math.Floor (pawn.GetStatValue (StatDefOf.Mass, true) / 10);
 					if (damage > 0) {
-						plant.TakeDamage (new DamageInfo (DamageDefOf.Crush, damage, -1f, null, null, null, DamageInfo.SourceCategory.ThingOrUnknown));
+						plant.TakeDamage (new DamageInfo (DamageDefOf.Rotting, damage, -1f, null, null, null, DamageInfo.SourceCategory.ThingOrUnknown));
 						if (plant.HitPoints <= 0) {
-							Log.Message (pawn.ToString () + " has damaged plant completely: "+plant.ToString());
+							Log.Message (pawn.ToString () + " has damaged plant completely: " + plant.ToString ());
 						} else {
 							//Log.Message (pawn.ToString () + " has damaged plant " + plant.ToString () + " [" + plant.HitPoints + "/" + plant.MaxHitPoints + "]");
 						}
@@ -67,8 +73,30 @@ namespace rimtrample
 
 			return pawnPrevPos [pawn] != pawn.Position;
 		}
+
+		public static void PlantTickLong (Plant __instance)
+		{
+			Plant plant = __instance;
+			if (GenPlant.GrowthSeasonNow (plant.Position, plant.Map)) {
+				if (plant.HitPoints < plant.MaxHitPoints) {
+					//Log.Message (plant.ToString()+" before: "+plant.HitPoints.ToString() +"/"+growthIntField.GetValue (plant).ToString());
+
+					// heal up
+					plant.HitPoints +=(int) Math.Ceiling(plant.HitPoints / 100f);
+					if (plant.HitPoints > plant.MaxHitPoints) {
+						plant.HitPoints = plant.MaxHitPoints;
+					}
+
+					// less growth
+					float num = (float)growthIntField.GetValue (plant);
+					float newNum = num - (float)growthPerTickField.GetValue (plant, null) * 1000f;
+					growthIntField.SetValue (plant, newNum); // took half growth constant from Plant.cs
+					//Log.Message (plant.ToString()+" after: "+plant.HitPoints.ToString() +"/"+growthIntField.GetValue (plant).ToString());
+				}
+			}
+		}
 	}
+
 }
 
-// TODO: no damage to trees?
-// TODO: no damage from pawn that makes agriculture or cuts plants, or returns from it (!)
+// TODO: no damage from pawn that _returns_ from agriculture operations?
