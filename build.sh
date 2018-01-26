@@ -1,2 +1,4 @@
 #! /usr/bin/sudo /bin/sh
-docker build -t rimmod . && docker run -v /tmp/bzt-artifacts/docker:/tmp/artifacts --entrypoint xbuild -it rimmod 
+MNGDIR=/media/bigdisk/games/steamapps/common/RimWorld/RimWorldLinux_Data/Managed
+
+docker build -t rimmod . && docker run -v $MNGDIR:/tmp/artifacts:ro --entrypoint xbuild -it rimmod 
