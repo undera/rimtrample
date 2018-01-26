@@ -6,6 +6,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C55814B6-B06B-46C1-BECB-AD04ADF02437}"
 	ProjectSection(SolutionItems) = preProject
 		..\About\About.xml = ..\About\About.xml
+		..\build.sh = ..\build.sh
+		..\Dockerfile = ..\Dockerfile
 	EndProjectSection
 EndProject
 Global
