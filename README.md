@@ -8,3 +8,4 @@ To balance this damaging, plants now slowly heal up over time, by cost of slowin
 
 With this mod, you will feel more annoyed by pets/animals/guests destroying your crops, you'll have to plan your crops to not be on the common pathways.
 
+[Steam Workshop Page](https://steamcommunity.com/sharedfiles/filedetails/?id=1356302049)
