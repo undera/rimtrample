@@ -1,3 +1,5 @@
 *.userprefs
 *.dll
 /Source/obj/
+/.idea/
+/.config/

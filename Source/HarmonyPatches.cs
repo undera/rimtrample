@@ -44,11 +44,11 @@ namespace rimtrample
 
 				Plant plant = pawn.Position.GetPlant (pawn.Map);
 				if (plant != null && pawn.CurJob.def != JobDefOf.Sow && pawn.CurJob.def != JobDefOf.Harvest && pawn.CurJob.def != JobDefOf.CutPlant) {
-					int damage = (int)Math.Floor (pawn.GetStatValue (StatDefOf.Mass, true) / 10);
+					int damage = (int)Math.Floor (pawn.GetStatValue (StatDefOf.Mass, true) / 2f);
 					if (damage > 0) {
 						plant.TakeDamage (new DamageInfo (DamageDefOf.Rotting, damage, -1f, null, null, null, DamageInfo.SourceCategory.ThingOrUnknown));
 						if (plant.HitPoints <= 0) {
-							Log.Message (pawn.ToString () + " has damaged plant completely: " + plant.ToString ());
+							//Log.Message (pawn.ToString () + " has damaged plant completely: " + plant.ToString ());
 						} else {
 							//Log.Message (pawn.ToString () + " has damaged plant " + plant.ToString () + " [" + plant.HitPoints + "/" + plant.MaxHitPoints + "]");
 						}
@@ -60,7 +60,7 @@ namespace rimtrample
 
 		public static void DeleteFromMap (Pawn __instance)
 		{
-			Log.Message ("Removing from map: " + __instance.ToString ());
+			//Log.Message ("Removing from map: " + __instance.ToString ());
 			pawnPrevPos.Remove (__instance);
 		}
 
@@ -82,14 +82,14 @@ namespace rimtrample
 					//Log.Message (plant.ToString()+" before: "+plant.HitPoints.ToString() +"/"+growthIntField.GetValue (plant).ToString());
 
 					// heal up
-					plant.HitPoints +=(int) Math.Ceiling(plant.HitPoints / 100f);
+					plant.HitPoints +=(int) Math.Ceiling(plant.HitPoints / 500f);
 					if (plant.HitPoints > plant.MaxHitPoints) {
 						plant.HitPoints = plant.MaxHitPoints;
 					}
 
 					// less growth
 					float num = (float)growthIntField.GetValue (plant);
-					float newNum = num - (float)growthPerTickField.GetValue (plant, null) * 1000f;
+					float newNum = num - (float)growthPerTickField.GetValue (plant, null) * 100f;
 					growthIntField.SetValue (plant, newNum); // took half growth constant from Plant.cs
 					//Log.Message (plant.ToString()+" after: "+plant.HitPoints.ToString() +"/"+growthIntField.GetValue (plant).ToString());
 				}
