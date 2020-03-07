@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using RimWorld;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +20,7 @@ namespace rimtrample
 		static HarmonyPatches()
 		{
 			Log.Message("trample patch start");
-			HarmonyInstance harmony = HarmonyInstance.Create("rimworld.undera4.unificamagica");
+			Harmony harmony = new Harmony("rimworld.undera4.unificamagica");
 
 			MethodInfo targetmethod = AccessTools.Method(typeof(RimWorld.PawnFootprintMaker), "FootprintMakerTick");
 			HarmonyMethod hookA = new HarmonyMethod(typeof(rimtrample.HarmonyPatches).GetMethod("Hook"));

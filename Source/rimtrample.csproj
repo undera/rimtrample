@@ -26,8 +26,13 @@
       <HintPath>..\..\..\..\..\..\media\bigdisk\games\steamapps\common\RimWorld\RimWorldLinux_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="HarmonyMod">
+      <HintPath>..\..\..\..\..\..\media\bigdisk\games\steamapps\workshop\content\294100\2009463077\v1.1\Assemblies\HarmonyMod.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="0Harmony">
-      <HintPath>packages\Lib.Harmony.1.2.0.1\lib\net35\0Harmony.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\media\bigdisk\games\steamapps\workshop\content\294100\2009463077\v1.1\Assemblies\0Harmony.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
