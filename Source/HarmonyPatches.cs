@@ -52,7 +52,7 @@ namespace rimtrample
 						plant.TakeDamage(new DamageInfo(DamageDefOf.Rotting, damage, 0f, -1f, null, null, null, DamageInfo.SourceCategory.ThingOrUnknown));
 						if (plant.HitPoints <= 0)
 						{
-							//Log.Message (pawn.ToString () + " has damaged plant completely: " + plant.ToString ());
+							Log.Message (pawn.ToString () + " has damaged plant completely: " + plant);
 						}
 						else
 						{
@@ -86,22 +86,23 @@ namespace rimtrample
 			Plant plant = __instance;
 			if (PlantUtility.GrowthSeasonNow(plant.Position, plant.Map))
 			{
-				if (plant.HitPoints < plant.MaxHitPoints)
+				if (plant.HitPoints < plant.MaxHitPoints && plant.def != ThingDefOf.BurnedTree)
 				{
-					//Log.Message (plant.ToString()+" before: "+plant.HitPoints.ToString() +"/"+growthIntField.GetValue (plant).ToString());
+					// Log.Message (plant+" before: "+plant.HitPoints.ToString() +"/"+growthIntField.GetValue (plant));
 
 					// heal up
 					plant.HitPoints += (int)Math.Ceiling(plant.HitPoints / 500f);
-					if (plant.HitPoints > plant.MaxHitPoints)
+                    if (plant.HitPoints > plant.MaxHitPoints)
 					{
-						plant.HitPoints = plant.MaxHitPoints;
+                        Log.Message(plant + " fully healed up: " + plant.def);
+                        plant.HitPoints = plant.MaxHitPoints;
 					}
 
 					// less growth
 					float num = (float)growthIntField.GetValue(plant);
 					float newNum = num - (float)growthPerTickField.GetValue(plant, null) * 100f;
 					growthIntField.SetValue(plant, newNum); // took half growth constant from Plant.cs
-															//Log.Message (plant.ToString()+" after: "+plant.HitPoints.ToString() +"/"+growthIntField.GetValue (plant).ToString());
+                    // Log.Message (plant+" after: "+plant.HitPoints.ToString() +"/"+growthIntField.GetValue (plant));
 				}
 			}
 		}
